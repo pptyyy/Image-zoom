@@ -1,0 +1,46 @@
+from PIL import Image
+import os
+
+def resize_image(input_path, output_path, max_size=None, scale_factor=None, algorithm=Image.LANCZOS):
+    """
+    等比缩放图片并保存
+    :param input_path: 输入图片路径
+    :param output_path: 输出图片路径
+    :param max_size: 最大尺寸（宽, 高），如(800, 600)，None表示不限制
+    :param scale_factor: 缩放比例（如0.5表示缩小一半），与max_size二选一
+    :param algorithm: 缩放算法（Image.NEAREST/BOX/BILINEAR/HAMMING/BICUBIC/LANCZOS，默认LANCZOS高质量）
+    """
+    try:
+        with Image.open(input_path) as img:
+            # 转换为RGB模式（避免模式错误）
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # 计算新尺寸
+            original_width, original_height = img.size
+            if max_size:
+                # 按最大尺寸等比缩放
+                ratio = min(max_size[0] / original_width, max_size[1] / original_height)
+                new_width = int(original_width * ratio)
+                new_height = int(original_height * ratio)
+            elif scale_factor:
+                # 按比例缩放
+                new_width = int(original_width * scale_factor)
+                new_height = int(original_height * scale_factor)
+            else:
+                raise ValueError("必须指定max_size或scale_factor")
+            
+            # 缩放图片
+            resized_img = img.resize((new_width, new_height), algorithm)
+            
+            # 保存图片
+            resized_img.save(output_path)
+            print(f"图片已缩放至 {new_width}x{new_height} 并保存到: {output_path}")
+    except Exception as e:
+        print(f"处理图片时出错: {e}")
+
+# 使用示例
+input_image = "input.jpg"  # 替换为你的图片路径
+output_image = "output.jpg"  # 替换为输出路径
+resize_image(input_image, output_image, max_size=(800, 600), algorithm=Image.LANCZOS)  # 按最大尺寸缩放
+# resize_image(input_image, output_image, scale_factor=0.5, algorithm=Image.BICUBIC)  # 按比例缩放

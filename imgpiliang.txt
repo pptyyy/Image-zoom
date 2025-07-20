@@ -1,0 +1,26 @@
+import os
+
+def batch_resize_images(input_dir, output_dir, max_size=None, scale_factor=None, algorithm=Image.LANCZOS):
+    """
+    批量等比缩放文件夹中的图片
+    :param input_dir: 输入文件夹路径
+    :param output_dir: 输出文件夹路径
+    :param max_size: 最大尺寸（宽, 高），如(800, 600)，None表示不限制
+    :param scale_factor: 缩放比例（如0.5表示缩小一半），与max_size二选一
+    :param algorithm: 缩放算法（默认LANCZOS高质量）
+    """
+    try:
+        os.makedirs(output_dir, exist_ok=True)  # 创建输出文件夹
+        for filename in os.listdir(input_dir):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+                input_path = os.path.join(input_dir, filename)
+                output_path = os.path.join(output_dir, filename)
+                resize_image(input_path, output_path, max_size, scale_factor, algorithm)
+        print(f"批量缩放完成，结果保存在: {output_dir}")
+    except Exception as e:
+        print(f"批量处理时出错: {e}")
+
+# 使用示例
+input_folder = "input_images"  # 输入文件夹路径
+output_folder = "output_images"  # 输出文件夹路径
+batch_resize_images(input_folder, output_folder, max_size=(1024, 768))  # 批量缩放至最大1024x768
